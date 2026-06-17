@@ -184,5 +184,32 @@
 
         loop();
     </script>
+    <audio id="bg-music" loop>
+        <source src="nhac.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Logic phát nhạc xuyên suốt các trang
+        const music = document.getElementById('bg-music');
+        
+        // 1. Kiểm tra xem trang trước đó nhạc đang phát tới giây thứ mấy
+        const savedTime = sessionStorage.getItem('musicTime');
+        if (savedTime) {
+            music.currentTime = savedTime; // Tua đến đúng giây đó
+        }
+
+        // 2. Thử phát nhạc ngay lập tức
+        music.play().catch(() => {
+            // Nếu trình duyệt chặn (do chưa click ở trang đầu), thì đợi Duyên chạm vào màn hình sẽ phát
+            window.addEventListener('click', () => {
+                music.play();
+            }, { once: true });
+        });
+
+        // 3. Trước khi Duyên bấm chuyển sang trang khác, lưu lại số giây bài hát đang phát
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('musicTime', music.currentTime);
+        });
+    </script>
 </body>
 </html>
