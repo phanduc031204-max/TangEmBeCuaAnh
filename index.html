@@ -1,108 +1,260 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chúc Mừng Sinh Nhật!</title>
+    <title>Chúc Mừng Sinh Nhật Xịn Xò!</title>
+    <!-- Phông chữ Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #feca57;
+            --text-color: #2d3436;
+            --bg-color: #f9f9f9;
+        }
+
         body {
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            overflow: hidden;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden; /* Ngăn cuộn trang */
         }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 50px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            max-width: 90%;
-            width: 400px;
+
+        .container {
+            position: relative;
             z-index: 10;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.5); /* Hiệu ứng Glassmorphism */
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+            max-width: 90%;
+            transform: rotateX(10deg);
+            transition: transform 0.5s ease;
+            opacity: 0; /* Bắt đầu ẩn */
+            animation: fadeInCard 1s ease-out 0.5s forwards; /* Hoạt ảnh xuất hiện */
+        }
+
+        .card:hover {
+            transform: rotateX(0deg) scale(1.02);
         }
 
         h1 {
-            color: #ff4757;
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
+            font-family: 'Pacifico', cursive;
+            color: var(--primary-color);
+            font-size: 3em;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 1s forwards;
         }
 
-        p {
-            color: #57606f;
-            font-size: 1.2em;
+        .age {
+            font-size: 1.5em;
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 1.3s forwards;
+        }
+
+        .wish {
+            color: var(--text-color);
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 1.6s forwards;
+        }
+
+        /* Hiệu ứng nến cháy */
+        .candle-container {
+            position: relative;
+            width: 50px;
+            height: 100px;
+            margin: 0 auto 30px auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 1.9s forwards;
+        }
+
+        .candle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 80px;
+            background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .wick {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 15px;
+            background: #444;
+            border-radius: 2px;
+        }
+
+        .flame {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 15px;
+            height: 25px;
+            background: radial-gradient(#ffea00, #ff9a00, #ff4500);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.8);
+            animation: flameFlicker 1.5s ease-in-out infinite alternate, flamePop 0.5s ease-out 2.2s forwards;
         }
 
         button {
-            background-color: #ff4757;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             padding: 15px 35px;
             font-size: 1.1em;
             border-radius: 30px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.3s;
-            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 2.5s forwards;
         }
 
         button:hover {
-            background-color: #ff6b81;
-            transform: translateY(-2px);
+            background-color: #ff8787;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
         }
 
-        button:active {
-            transform: translateY(2px);
+        /* Keyframes Animations */
+        @keyframes fadeInCard {
+            to { opacity: 1; transform: rotateX(0deg); }
         }
 
-        /* Hiệu ứng nảy nhẹ cho tiêu đề */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-15px);}
-            60% {transform: translateY(-7px);}
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes flameFlicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 0.9; }
+            20% { transform: translateX(-50%) scale(1.1) rotate(1deg); opacity: 1; }
+            40% { transform: translateX(-50%) scale(0.95) rotate(-1deg); opacity: 0.85; }
+            60% { transform: translateX(-50%) scale(1.05) rotate(1deg); opacity: 1; }
+            80% { transform: translateX(-50%) scale(0.98) rotate(-0.5deg); opacity: 0.9; }
+            100% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes flamePop {
+            to { transform: translateX(-50%) scale(1); }
+        }
+
+        /* Pháo giấy nền */
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* Không cản trở click */
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>🎉 Happy Birthday! 🎉</h1>
-        <p>Chúc bạn một tuổi mới ngập tràn niềm vui, sức khỏe và luôn thành công trong mọi dự định sắp tới nhé!</p>
-        <button id="celebrateBtn">Bấm vào đây để nhận quà!</button>
+    <!-- Canvas cho pháo giấy -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="container">
+        <div class="card">
+            <!-- Thay đổi tên tại đây -->
+            <h1>Chúc Mừng Sinh Nhật, [Tên Người Nhận]!</h1>
+            <!-- Thay đổi tuổi tại đây -->
+            <div class="age">Tuổi [Tuổi]</div>
+            
+            <div class="candle-container">
+                <div class="candle"></div>
+                <div class="wick"></div>
+                <div class="flame"></div>
+            </div>
+
+            <!-- Thay đổi lời chúc tại đây -->
+            <p class="wish">
+                Chúc bạn một tuổi mới ngập tràn niềm vui, hạnh phúc, sức khỏe dồi dào và gặt hái được nhiều thành công rực rỡ trong cuộc sống. Mong rằng mọi ước mơ của bạn sẽ sớm trở thành hiện thực! 🎉🎂
+            </p>
+            
+            <button id="celebrateBtn">Cùng Thổi Nến & Nhận Quà!</button>
+        </div>
     </div>
 
+    <!-- Thư viện pháo giấy canvas-confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
+        // Khởi tạo pháo giấy nền nhẹ nhàng
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const myConfetti = confetti.create(confettiCanvas, { resize: true });
+
+        function startBgConfetti() {
+            myConfetti({
+                particleCount: 100,
+                spread: 160,
+                origin: { y: 0.6 },
+                colors: ['#ff6b6b', '#feca57', '#54a0ff', '#1dd1a1']
+            });
+        }
+
+        // Chạy pháo giấy nền sau khi card xuất hiện
+        setTimeout(startBgConfetti, 1000);
+
+        // Xử lý sự kiện click nút
         document.getElementById('celebrateBtn').addEventListener('click', function() {
-            // Cài đặt thời gian bắn pháo giấy (3 giây)
-            var duration = 3 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            // Hiệu ứng pháo giấy nổ mạnh
+            const duration = 5 * 1000; // 5 giây
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
 
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
+            const interval = setInterval(function() {
+              const timeLeft = animationEnd - Date.now();
 
-                var particleCount = 50 * (timeLeft / duration);
-                
-                // Bắn pháo giấy từ nhiều vị trí ngẫu nhiên
-                confetti(Object.assign({}, defaults, { 
-                    particleCount,
-                    origin: { x: Math.random(), y: Math.random() - 0.2 }
-                }));
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              const particleCount = 50 * (timeLeft / duration);
+              // Bắn pháo giấy từ hai bên
+              myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
+
+            // Thêm hiệu ứng âm thanh (tùy chọn)
+            // const audio = new Audio('path/to/birthday-song.mp3');
+            // audio.play();
+
+            // Đổi văn bản nút
+            this.textContent = "Đã Thổi Nến! Chúc Mừng!";
+            this.style.backgroundColor = "#1dd1a1";
+            this.style.boxShadow = "0 5px 15px rgba(29, 209, 161, 0.4)";
         });
     </script>
 </body>
