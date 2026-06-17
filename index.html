@@ -286,29 +286,37 @@
             }, 2000);
         });
     </script>
-    <audio id="bg-music" loop>
+ <audio id="bg-music" loop>
         <source src="nhac.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // Logic phát nhạc xuyên suốt các trang
         const music = document.getElementById('bg-music');
         
         // 1. Kiểm tra xem trang trước đó nhạc đang phát tới giây thứ mấy
         const savedTime = sessionStorage.getItem('musicTime');
         if (savedTime) {
-            music.currentTime = savedTime; // Tua đến đúng giây đó
+            music.currentTime = savedTime;
         }
 
-        // 2. Thử phát nhạc ngay lập tức
+        // 2. Thử phát nhạc. Nếu trên điện thoại bị chặn thì chờ tương tác nhẹ
         music.play().catch(() => {
-            // Nếu trình duyệt chặn (do chưa click ở trang đầu), thì đợi Duyên chạm vào màn hình sẽ phát
-            window.addEventListener('click', () => {
+            // Định nghĩa hàm bật nhạc khi có tương tác (chạm, lướt)
+            const startAudio = () => {
                 music.play();
-            }, { once: true });
+                // Bật xong thì gỡ bỏ sự kiện để web không bị nặng
+                ['click', 'touchstart', 'touchmove'].forEach(event => {
+                    window.removeEventListener(event, startAudio);
+                });
+            };
+
+            // Lắng nghe mọi hành động: Click, chạm màn hình, vuốt màn hình
+            ['click', 'touchstart', 'touchmove'].forEach(event => {
+                window.addEventListener(event, startAudio, { once: true });
+            });
         });
 
-        // 3. Trước khi Duyên bấm chuyển sang trang khác, lưu lại số giây bài hát đang phát
+        // 3. Lưu lại số giây trước khi chuyển trang
         window.addEventListener('beforeunload', () => {
             sessionStorage.setItem('musicTime', music.currentTime);
         });
