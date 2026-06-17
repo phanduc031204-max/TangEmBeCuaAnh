@@ -287,29 +287,25 @@
         });
     </script>
 <!-- Trình phát nhạc ẩn -->
-    <audio id="bg-music" loop>
+    <audio id="bg-music" loop preload="auto">
         <source src="nhac.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // 0. KHỞI TẠO NHẠC
         const music = document.getElementById('bg-music');
+        
+        // 1. Nối tiếp thời gian nhạc từ trang trước
         const savedTime = sessionStorage.getItem('musicTime');
         if (savedTime) {
-            music.currentTime = savedTime;
+            music.currentTime = parseFloat(savedTime);
         }
 
-        // Cố gắng phát luôn (PC sẽ chạy được ngay)
-        music.play().catch(() => {
-            // Nếu bị chặn, không sao, chờ tương tác mở thư bên dưới
-        });
-
-        // Lưu thời gian nhạc khi chuyển trang
+        // Lưu thời gian nhạc khi sang trang
         window.addEventListener('beforeunload', () => {
             sessionStorage.setItem('musicTime', music.currentTime);
         });
 
-        // 1. Tạo sao lấp lánh bằng JS
+        // 2. Tạo sao lấp lánh
         const starsContainer = document.getElementById('stars-container');
         for (let i = 0; i < 50; i++) {
             let star = document.createElement('div');
@@ -323,26 +319,42 @@
             starsContainer.appendChild(star);
         }
 
-        // 2. Logic mở thư & ÉP CHẠY NHẠC TRÊN MOBILE
+        // 3. LOGIC CHẠM VÀ PHÁT NHẠC (CHỐNG LỖI MOBILE 100%)
         const mailContainer = document.getElementById('mail-container');
         const btnNext = document.getElementById('btn-next');
         let isOpen = false;
 
-        mailContainer.addEventListener('click', function(e) {
+        // Hàm chung: Ép nhạc phát
+        const forcePlayMusic = () => {
+            if (music.paused) {
+                music.play().catch(e => console.log("Chưa thể phát nhạc:", e));
+            }
+        };
+
+        // Bắt bất kỳ cú chạm/click nào trên toàn màn hình để "mở khóa" âm thanh
+        document.addEventListener('click', forcePlayMusic, { once: true });
+        document.addEventListener('touchstart', forcePlayMusic, { once: true });
+
+        // Logic mở thư khi chạm phong bì
+        const handleOpenEnvelope = function(e) {
+            // Nếu bấm trúng nút "Khám phá tiếp" thì bỏ qua
             if (e.target === btnNext) return;
 
-            // QUAN TRỌNG: Ép trình duyệt phát nhạc ngay khoảnh khắc chạm vào phong bì
-            if (music.paused) {
-                music.play();
-            }
+            // Chắc chắn ép phát nhạc thêm 1 lần nữa
+            forcePlayMusic();
             
+            // Mở thư
             if (!isOpen) {
                 mailContainer.classList.add('open');
                 isOpen = true;
             }
-        });
+        };
 
-        // 3. Logic bắn pháo giấy & chuyển trang
+        // Gắn sự kiện vào phong bì (dùng cả touchstart và click)
+        mailContainer.addEventListener('click', handleOpenEnvelope);
+        mailContainer.addEventListener('touchstart', handleOpenEnvelope, { passive: true });
+
+        // 4. Logic bắn pháo giấy & chuyển trang gallery.html
         btnNext.addEventListener('click', function(e) {
             e.preventDefault(); 
             e.stopPropagation();
