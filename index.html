@@ -24,7 +24,38 @@
             position: relative;
         }
 
-        /* Nền sao lấp lánh bằng CSS */
+        /* --- MÀN HÌNH CHỜ (CHIÊU CUỐI ÉP PHÁT NHẠC) --- */
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #1a0b2e;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #ffb3c6;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-overlay p {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 10px #ffb3c6; }
+        }
+
+        /* Nền sao lấp lánh */
         .stars {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -50,25 +81,6 @@
             z-index: 10;
             width: 320px;
             height: 220px;
-        }
-
-        /* Lời nhắc chạm */
-        .tap-text {
-            position: absolute;
-            top: -40px;
-            width: 100%;
-            text-align: center;
-            color: #ffb3c6;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            animation: bounce 2s infinite;
-            pointer-events: none;
-            transition: opacity 0.5s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
 
         /* Phong bì */
@@ -187,10 +199,6 @@
         }
 
         /* ----- TRẠNG THÁI MỞ THƯ ----- */
-        .container.open .tap-text {
-            opacity: 0;
-        }
-
         .container.open .flap {
             transform: rotateX(180deg);
             z-index: 0;
@@ -207,105 +215,73 @@
         .container.open .letter .btn-love {
             opacity: 1;
         }
-
     </style>
 </head>
 <body>
 
+    <div id="start-overlay">
+        <p>Chạm vào màn hình để bắt đầu 🥰</p>
+    </div>
+
     <div class="stars" id="stars-container"></div>
 
     <div class="container" id="mail-container">
-        <div class="tap-text">Chạm vào phong bì nhé</div>
         <div class="envelope">
             <div class="flap"></div>
             <div class="sides"></div>
             <div class="front"></div>
             
             <div class="letter">
-                <h1>Gửi Duyên của ANH,</h1>
+                <h1>Gửi Duyên,</h1>
                 <p>
-                    Chúc mừng sinh nhật bấy bì ✨<br><br>
-                    Chúc em một tuổi mới thật rực rỡ và bình an. Thế giới này có hàng tỉ người, nhưng vũ trụ lại sắp xếp để anh được ở cạnh một cô gái đặc biệt như em. Hãy cứ mỉm cười thật tươi nhé, vì nụ cười của em là điều đẹp nhất anh luôn muốn giữ gìn.
+                    Chào tuổi mới của Duyên! ✨<br><br>
+                    Chúc Duyên một tuổi mới ngập tràn niềm vui, vạn sự hanh thông và lúc nào cũng rạng rỡ. Cảm ơn Duyên vì đã luôn là một mảnh ghép thật đặc biệt.<br><br>
+                    Mọi điều tốt đẹp nhất sẽ đến với Duyên nhé!
                 </p>
                 <a href="#" class="btn-love" id="btn-next">Khám phá tiếp nhé ✨</a>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script>
-        // 1. Tạo sao lấp lánh bằng JS sinh ra HTML thuần
-        const starsContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 50; i++) {
-            let star = document.createElement('div');
-            star.className = 'star';
-            star.style.width = Math.random() * 3 + 1 + 'px';
-            star.style.height = star.style.width;
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.top = Math.random() * 100 + 'vh';
-            star.style.animationDuration = Math.random() * 3 + 2 + 's';
-            star.style.animationDelay = Math.random() * 2 + 's';
-            starsContainer.appendChild(star);
-        }
-
-        // 2. Logic mở thư
-        const mailContainer = document.getElementById('mail-container');
-        const btnNext = document.getElementById('btn-next');
-        let isOpen = false;
-
-        mailContainer.addEventListener('click', function(e) {
-            // Không kích hoạt đóng/mở thư nếu click trúng nút chuyển trang
-            if (e.target === btnNext) return;
-            
-            if (!isOpen) {
-                mailContainer.classList.add('open');
-                isOpen = true;
-            }
-        });
-
-        // 3. Logic bắn pháo giấy & chuyển sang trang gallery.html
-        btnNext.addEventListener('click', function(e) {
-            e.preventDefault(); // Ngăn chuyển trang ngay lập tức
-            e.stopPropagation();
-            
-            // Đổi text nút
-            this.innerHTML = "Yêu Duyên! ❤️";
-            this.style.background = "#ff4d6d";
-
-            // Bắn pháo
-            confetti({
-                particleCount: 150,
-                spread: 100,
-                origin: { y: 0.6 },
-                colors: ['#ffb3c6', '#ff4d6d', '#ffffff']
-            });
-
-            // Đợi 2 giây để xem hết hiệu ứng pháo giấy rồi tự động sang trang ảnh
-            setTimeout(function() {
-                window.location.href = "gallery.html";
-            }, 2000);
-        });
-    </script>
-<!-- Trình phát nhạc ẩn -->
     <audio id="bg-music" loop preload="auto">
         <source src="nhac.mp3" type="audio/mpeg">
     </audio>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         const music = document.getElementById('bg-music');
+        const startOverlay = document.getElementById('start-overlay');
         
-        // 1. Nối tiếp thời gian nhạc từ trang trước
+        // 1. Phục hồi thời gian nhạc nếu load lại trang
         const savedTime = sessionStorage.getItem('musicTime');
         if (savedTime) {
             music.currentTime = parseFloat(savedTime);
         }
 
-        // Lưu thời gian nhạc khi sang trang
+        // Lưu thời gian trước khi chuyển trang
         window.addEventListener('beforeunload', () => {
             sessionStorage.setItem('musicTime', music.currentTime);
         });
 
-        // 2. Tạo sao lấp lánh
+        // 2. KHI DÙNG CHẠM VÀO MÀN HÌNH CHỜ
+        startOverlay.addEventListener('click', function() {
+            // Ép phát nhạc ngay lập tức
+            music.play().then(() => {
+                // Nhạc phát thành công -> Ẩn màn hình chờ đi
+                startOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    startOverlay.style.display = 'none';
+                }, 500);
+            }).catch((err) => {
+                // Lỡ có lỗi cũng ẩn màn hình chờ để Duyên còn đọc thư
+                startOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    startOverlay.style.display = 'none';
+                }, 500);
+            });
+        });
+
+        // 3. Tạo sao lấp lánh
         const starsContainer = document.getElementById('stars-container');
         for (let i = 0; i < 50; i++) {
             let star = document.createElement('div');
@@ -319,42 +295,21 @@
             starsContainer.appendChild(star);
         }
 
-        // 3. LOGIC CHẠM VÀ PHÁT NHẠC (CHỐNG LỖI MOBILE 100%)
+        // 4. Mở thư (Bây giờ không cần lo vụ nhạc nữa vì Overlay đã lo rồi)
         const mailContainer = document.getElementById('mail-container');
         const btnNext = document.getElementById('btn-next');
         let isOpen = false;
 
-        // Hàm chung: Ép nhạc phát
-        const forcePlayMusic = () => {
-            if (music.paused) {
-                music.play().catch(e => console.log("Chưa thể phát nhạc:", e));
-            }
-        };
-
-        // Bắt bất kỳ cú chạm/click nào trên toàn màn hình để "mở khóa" âm thanh
-        document.addEventListener('click', forcePlayMusic, { once: true });
-        document.addEventListener('touchstart', forcePlayMusic, { once: true });
-
-        // Logic mở thư khi chạm phong bì
-        const handleOpenEnvelope = function(e) {
-            // Nếu bấm trúng nút "Khám phá tiếp" thì bỏ qua
+        mailContainer.addEventListener('click', function(e) {
             if (e.target === btnNext) return;
-
-            // Chắc chắn ép phát nhạc thêm 1 lần nữa
-            forcePlayMusic();
             
-            // Mở thư
             if (!isOpen) {
                 mailContainer.classList.add('open');
                 isOpen = true;
             }
-        };
+        });
 
-        // Gắn sự kiện vào phong bì (dùng cả touchstart và click)
-        mailContainer.addEventListener('click', handleOpenEnvelope);
-        mailContainer.addEventListener('touchstart', handleOpenEnvelope, { passive: true });
-
-        // 4. Logic bắn pháo giấy & chuyển trang gallery.html
+        // 5. Bắn pháo & Chuyển trang
         btnNext.addEventListener('click', function(e) {
             e.preventDefault(); 
             e.stopPropagation();
