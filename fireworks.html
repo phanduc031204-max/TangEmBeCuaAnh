@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Finale 🎆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            width: 90%;
+            pointer-events: none; /* Không cản trở click chuột vẽ pháo hoa */
+        }
+
+        .center-text h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4d6d;
+            font-size: 4rem;
+            text-shadow: 0 0 20px #ff4d6d, 0 0 40px #ff4d6d;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .center-text p {
+            color: #fff;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .signature {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: #ffb3c6;
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); text-shadow: 0 0 30px #ff4d6d, 0 0 60px #ff4d6d; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="center-text">
+        <h1>Happy Birthday Duyên! 💖</h1>
+        <p>Tuổi mới luôn rực rỡ như những chùm pháo hoa này nhé!</p>
+        <div class="signature">— Từ Đức với ngàn tình yêu —</div>
+    </div>
+
+    <canvas id="fw-canvas"></canvas>
+
+    <script>
+        // JS Code Pháo Hoa (Fireworks)
+        const canvas = document.getElementById('fw-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function setCanvasSize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        setCanvasSize();
+        window.addEventListener('resize', setCanvasSize);
+
+        const fireworks = [];
+        const particles = [];
+        const colors = ['#ff4d6d', '#feca57', '#54a0ff', '#1dd1a1', '#c56cf0'];
+
+        function random(min, max) { return Math.random() * (max - min) + min; }
+
+        class Firework {
+            constructor() {
+                this.x = random(width * 0.2, width * 0.8);
+                this.y = height;
+                this.targetY = random(height * 0.1, height * 0.4);
+                this.speed = random(3, 6);
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.radius = 3;
+            }
+            update() {
+                this.y -= this.speed;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = random(0, Math.PI * 2);
+                const velocity = random(1, 8);
+                this.vx = Math.cos(angle) * velocity;
+                this.vy = Math.sin(angle) * velocity;
+                this.life = random(40, 80);
+                this.opacity = 1;
+                this.size = random(1, 3);
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.05; // gravity
+                this.life--;
+                this.opacity -= 0.015;
+            }
+            draw() {
+                ctx.globalAlpha = Math.max(0, this.opacity);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function loop() {
+            // Hiệu ứng mờ đuôi (trail)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Bắn pháo hoa mới
+            if (Math.random() < 0.03) {
+                fireworks.push(new Firework());
+            }
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const fw = fireworks[i];
+                fw.update();
+                fw.draw();
+                if (fw.y <= fw.targetY) {
+                    createParticles(fw.x, fw.y, fw.color);
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+                if (p.life <= 0 || p.opacity <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        // Tương tác chạm màn hình để bắn pháo hoa
+        canvas.addEventListener('pointerdown', (e) => {
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            createParticles(e.clientX, e.clientY, color);
+        });
+
+        loop();
+    </script>
+</body>
+</html>
